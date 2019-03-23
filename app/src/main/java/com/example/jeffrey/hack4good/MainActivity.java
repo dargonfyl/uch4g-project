@@ -1,7 +1,9 @@
 package com.example.jeffrey.hack4good;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
@@ -11,7 +13,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button button = findViewById(R.id.button);
-//        button.setOnClickListener();
+        /*
+         * Goes to the get a random image from r/aww
+         */
+        final Button rawwButton = findViewById(R.id.button);
+        rawwButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent goToRandomImage = new Intent(getApplicationContext(), RandomImageActivity.class);
+                startActivity(goToRandomImage);
+            }
+        });
     }
 }
