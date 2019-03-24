@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
         final Button pickImageButton = findViewById(R.id.button2);
         pickImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent getImage = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                Intent getImage = new Intent();
+                getImage.setType("image/*");
+                getImage.setAction(Intent.ACTION_GET_CONTENT);
 
                 startActivityForResult(getImage, 1);
             }
@@ -58,7 +62,12 @@ public class MainActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            Bitmap bimage = BitmapFactory.decodeFile(picturePath);
+            Bitmap bimage = null;
+            try {
+                bimage = getBitmapFromUri(selectedImage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             ByteArrayOutputStream bStream = new ByteArrayOutputStream();
             bimage.compress(Bitmap.CompressFormat.PNG, 100, bStream);
             byte[] byteArray = bStream.toByteArray();
@@ -68,5 +77,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(goToColoring);
 
         }
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
     }
 }

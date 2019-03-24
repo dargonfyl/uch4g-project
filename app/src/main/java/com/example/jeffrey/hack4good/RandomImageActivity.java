@@ -99,16 +99,9 @@ public class RandomImageActivity extends AppCompatActivity {
     }
 
     private void sendFinalImage(Submission sub, ImageView im) {
-//        ImageView imageView = findViewById(R.id.imageCycler);
-//        new DownloadImageFromInternet(imageView).execute(sub.getURL());
-//        Bitmap bitmap = getBitmap((VectorDrawable) imageView.getDrawable());
-//        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
-//        byte[] byteArray = bStream.toByteArray();
-
-        Bitmap bitmap = null;
-        new DownloadImageFromInternet(im).execute(sub.getURL());
-        bitmap = getBitmap((VectorDrawable) im.getDrawable());
+        ImageView imageView = findViewById(R.id.imageCycler);
+        new DownloadImageFromInternet(imageView).execute(sub.getURL());
+        Bitmap bitmap = getBitmap((VectorDrawable) imageView.getDrawable());
         ByteArrayOutputStream bStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
         byte[] byteArray = bStream.toByteArray();
@@ -120,6 +113,7 @@ public class RandomImageActivity extends AppCompatActivity {
 
     private class DownloadImageFromInternet extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
+        Bitmap res;
 
         public DownloadImageFromInternet(ImageView imageView) {
             this.imageView = imageView;
@@ -141,7 +135,12 @@ public class RandomImageActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Bitmap result) {
+            this.res = result;
             imageView.setImageBitmap(result);
+        }
+
+        protected Bitmap getBitmap() {
+            return res;
         }
     }
 
